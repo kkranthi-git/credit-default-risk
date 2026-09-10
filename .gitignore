@@ -1,0 +1,14 @@
+.venv/
+.venv-codex/
+.venv.broken/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+data/raw/*
+data/processed/*
+
+models/*.pkl
+artifacts/
+
+.env
