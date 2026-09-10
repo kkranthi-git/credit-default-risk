@@ -1,7 +1,3 @@
-# ============================================================
-# src/train.py
-# ============================================================
-
 from pathlib import Path
 import joblib
 
@@ -9,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 
-from .preprocessing import (
+from preprocessing import (
     prepare_data,
     create_preprocessor
 )
@@ -26,8 +22,6 @@ MODEL_DIR.mkdir(
 
 
 def train_models():
-
-    """Train reproducible baseline models and save inference artifacts."""
 
     X, y = prepare_data()
 

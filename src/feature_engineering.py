@@ -1,7 +1,3 @@
-# ============================================================
-# src/feature_engineering.py
-# ============================================================
-
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -35,13 +31,6 @@ PAYMENT_COLS = [
     "PAY_AMT6"
 ]
 
-ENGINEERED_NUMERICAL_COLS = [
-    "TOTAL_BILL_AMT", "TOTAL_PAY_AMT", "AVG_BILL_AMT", "AVG_PAY_AMT",
-    "MAX_BILL_AMT", "MAX_PAY_AMT", "DELAY_COUNT", "SEVERE_DELAY_COUNT",
-    "AVG_PAY_STATUS", "MAX_PAY_STATUS", "PAYMENT_TO_BILL_RATIO",
-    "CREDIT_UTILIZATION",
-]
-
 PAY_STATUS_COLS = [
     "PAY_0",
     "PAY_2",
@@ -54,13 +43,7 @@ PAY_STATUS_COLS = [
 
 def create_features(df):
 
-    """Create customer features available before the next payment outcome."""
-
     df = df.copy()
-    required_columns = {"LIMIT_BAL", *BILL_COLS, *PAYMENT_COLS, *PAY_STATUS_COLS}
-    missing_columns = required_columns.difference(df.columns)
-    if missing_columns:
-        raise ValueError("Missing columns required for feature engineering: " + ", ".join(sorted(missing_columns)))
 
     if "ID" in df.columns:
         df = df.drop(columns=["ID"])
@@ -125,8 +108,7 @@ def create_features(df):
 
 if __name__ == "__main__":
 
-    # The UCI source workbook stores its column labels on the second row.
-    df = pd.read_excel(DATA_PATH, header=1)
+    df = pd.read_excel(DATA_PATH)
 
     df = create_features(df)
 

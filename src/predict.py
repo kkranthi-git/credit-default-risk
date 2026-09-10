@@ -1,34 +1,14 @@
-# ============================================================
-# src/predict.py
-# ============================================================
-
 from pathlib import Path
 import joblib
 import pandas as pd
-
-from .feature_engineering import create_features
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 MODEL_DIR = PROJECT_ROOT / "models"
-LOW_RISK_MAX = 0.30
-MEDIUM_RISK_MAX = 0.60
-
-
-def categorize_risk(probabilities):
-    """Apply project-specific probability bands; these are not industry standards."""
-    return pd.cut(
-        probabilities,
-        bins=[-0.001, LOW_RISK_MAX, MEDIUM_RISK_MAX, 1.0],
-        labels=["Low Risk", "Medium Risk", "High Risk"],
-        include_lowest=True,
-    )
 
 
 def predict_risk(data):
-
-    """Return default probabilities and project risk categories for customer rows."""
 
     model = joblib.load(
         MODEL_DIR / "random_forest.pkl"
@@ -38,14 +18,9 @@ def predict_risk(data):
         MODEL_DIR / "preprocessor.pkl"
     )
 
-    if not isinstance(data, pd.DataFrame) or data.empty:
-        raise ValueError("Prediction input must be a non-empty pandas DataFrame.")
-    feature_data = create_features(data)
-    expected_columns = list(preprocessor.feature_names_in_)
-    missing_columns = set(expected_columns).difference(feature_data.columns)
-    if missing_columns:
-        raise ValueError("Prediction input is missing required columns: " + ", ".join(sorted(missing_columns)))
-    processed_data = preprocessor.transform(feature_data[expected_columns])
+    processed_data = (
+        preprocessor.transform(data)
+    )
 
     probability = model.predict_proba(
         processed_data
@@ -60,7 +35,16 @@ def predict_risk(data):
         "Prediction": prediction
     })
 
-    result["Risk_Category"] = categorize_risk(result["Default_Probability"])
+    result["Risk_Category"] = pd.cut(
+        result["Default_Probability"],
+        bins=[0, 0.30, 0.60, 1.0],
+        labels=[
+            "Low Risk",
+            "Medium Risk",
+            "High Risk"
+        ],
+        include_lowest=True
+    )
 
     return result
 
