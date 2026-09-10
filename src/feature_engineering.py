@@ -1,16 +1,5 @@
-from pathlib import Path
 import pandas as pd
 import numpy as np
-
-
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-
-DATA_PATH = (
-    PROJECT_ROOT /
-    "data" /
-    "raw" /
-    "credit_default.xls"
-)
 
 
 BILL_COLS = [
@@ -38,6 +27,22 @@ PAY_STATUS_COLS = [
     "PAY_4",
     "PAY_5",
     "PAY_6"
+]
+
+
+ENGINEERED_NUMERICAL_COLS = [
+    "TOTAL_BILL_AMT",
+    "TOTAL_PAY_AMT",
+    "AVG_BILL_AMT",
+    "AVG_PAY_AMT",
+    "MAX_BILL_AMT",
+    "MAX_PAY_AMT",
+    "DELAY_COUNT",
+    "SEVERE_DELAY_COUNT",
+    "AVG_PAY_STATUS",
+    "MAX_PAY_STATUS",
+    "PAYMENT_TO_BILL_RATIO",
+    "CREDIT_UTILIZATION"
 ]
 
 
@@ -89,13 +94,13 @@ def create_features(df):
     )
 
     df["PAYMENT_TO_BILL_RATIO"] = (
-        df["TOTAL_PAY_AMT"] /
-        df["TOTAL_BILL_AMT"].replace(0, np.nan)
+        df["TOTAL_PAY_AMT"]
+        / df["TOTAL_BILL_AMT"].replace(0, np.nan)
     )
 
     df["CREDIT_UTILIZATION"] = (
-        df["BILL_AMT1"] /
-        df["LIMIT_BAL"].replace(0, np.nan)
+        df["BILL_AMT1"]
+        / df["LIMIT_BAL"].replace(0, np.nan)
     )
 
     df = df.replace(
@@ -104,13 +109,3 @@ def create_features(df):
     )
 
     return df
-
-
-if __name__ == "__main__":
-
-    df = pd.read_excel(DATA_PATH)
-
-    df = create_features(df)
-
-    print(df.shape)
-    print(df.head())
